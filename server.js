@@ -1,6 +1,5 @@
 const http = require('http');
 
-// Ang webhook URL na ibinigay mo
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1550735146599190543/VGzmrAx3DF4ybcpWeqTmH3BD_bFS4Ayanzok9vF7K3Kt04JLSQAcWlxQBM83rkyEqwNg";
 
 const server = http.createServer(async (req, res) => {
@@ -62,6 +61,27 @@ const server = http.createServer(async (req, res) => {
                 });
 
                 if (discordResponse.ok) {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, message: "Sent to Discord!" }));
+                } else {
+                    const errText = await discordResponse.text();
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: false, error: errText }));
+                }
+
+            } catch (err) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end("Not Found");
+    }
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ success: true, message: "Sent to Discord!" }));
                 } else {
